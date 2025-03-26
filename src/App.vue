@@ -1,13 +1,19 @@
 <template>
   <div class="app-container">
     <!-- Sidebar (Available Tables) on the left -->
-    <div class="sidebar">
-
+    <div v-if="isTableSidebarVisible" class="sidebar">
+      <div class="sidebar-header">
+    
+        <span class="toggle-arrow" @click="toggleTableSidebar">◄</span>
+      </div>
       <TableInfo @select-table="handleSelectTable" @select-column="handleSelectColumn" />
+    </div>
+    <div v-else class="sidebar-toggle">
+      <span class="toggle-arrow" @click="toggleTableSidebar">►</span>
     </div>
 
     <!-- Main Editor Section -->
-    <div class="editor-container">
+    <div class="editor-container" :class="{ 'full-width': !isTableSidebarVisible || !isHistorySidebarVisible }">
       <!-- Editor Navbar -->
       <EditorNavbar
         :tabs="tabs"
@@ -45,11 +51,15 @@
     </div>
 
     <!-- Right Sidebar (History) -->
-    <div class="right-sidebar">
-      <!-- History -->
-      <div class="table-info">
-        <History :history="history" @select-query="handleSelectQuery" @clear-history="handleClearHistory" />
+    <div v-if="isHistorySidebarVisible" class="right-sidebar">
+      <div class="sidebar-header">
+   
+        <span class="toggle-arrow" @click="toggleHistorySidebar">►</span>
       </div>
+      <History :history="history" @select-query="handleSelectQuery" @clear-history="handleClearHistory" />
+    </div>
+    <div v-else class="right-sidebar-toggle">
+      <span class="toggle-arrow" @click="toggleHistorySidebar">◄</span>
     </div>
   </div>
 </template>
@@ -78,8 +88,8 @@ export default {
       activeTab: 0,
       isOutputVisible: false,
       fullScreen: false,
-      hideSideBar: true,
-      hideTableSideBar: false,
+      isTableSidebarVisible: true, // New: Control visibility of Available Tables sidebar
+      isHistorySidebarVisible: true, // New: Control visibility of History sidebar
       outputData: null,
       isOutputLoad: false,
     }
@@ -167,6 +177,12 @@ export default {
       this.history = []
       localStorage.setItem('history', JSON.stringify({ items: this.history }))
     },
+    toggleTableSidebar() {
+      this.isTableSidebarVisible = !this.isTableSidebarVisible
+    },
+    toggleHistorySidebar() {
+      this.isHistorySidebarVisible = !this.isHistorySidebarVisible
+    },
   },
 }
 </script>
@@ -188,6 +204,50 @@ export default {
   overflow-y: auto;
 }
 
+.sidebar-toggle {
+  flex: 0 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #ffffff33;
+  background-color: #1a1e24;
+  cursor: pointer;
+}
+
+.right-sidebar {
+  flex: 0.2;
+  border-left: 1px solid #ffffff33;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.right-sidebar-toggle {
+  flex: 0 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #ffffff33;
+  background-color: #1a1e24;
+  cursor: pointer;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.toggle-arrow {
+  font-size: 1.2rem;
+  color: #d1d5db;
+  cursor: pointer;
+}
+
+.toggle-arrow:hover {
+  color: #fff;
+}
+
 .editor-container {
   flex: 0.6;
   border-left: 1px solid #ffffff33;
@@ -195,6 +255,11 @@ export default {
   display: flex;
   flex-direction: column;
   overflow-x: auto;
+  transition: flex 0.3s ease;
+}
+
+.editor-container.full-width {
+  flex: 1;
 }
 
 .editor-content {
@@ -204,24 +269,12 @@ export default {
   overflow: hidden;
 }
 
-.right-sidebar {
-  flex: 0.2;
-  border-left: 1px solid #ffffff33;
-}
-
-.table-info {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-}
-
 .output-section {
   border-top: 1px solid #ffffff33;
 }
 
 .output-title {
   margin: 0;
-  margin-bottom: 3px;
   padding: 0.5rem 1rem;
   background-color: #0d1116;
   font-size: 1.2rem;
@@ -236,6 +289,6 @@ export default {
 
 .output-content {
   height: 240px;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 </style>

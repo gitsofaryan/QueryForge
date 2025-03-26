@@ -82,6 +82,7 @@ export default {
   margin-bottom: 0.5rem;
   background-color: #1a1e24;
   border-radius: 5px;
+  font-size: medium;
   cursor: pointer;
   transition: background-color 0.2s ease;
   white-space: nowrap;

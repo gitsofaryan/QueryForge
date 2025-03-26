@@ -46,6 +46,29 @@ export default {
           ],
         },
         {
+          name: 'Employees',
+          columns: [
+            { name: 'employeeID', type: 'int' },
+            { name: 'firstName', type: 'varchar' },
+            { name: 'lastName', type: 'varchar' },
+            { name: 'title', type: 'varchar' },
+            { name: 'titleOfCourtesy', type: 'varchar' },
+            { name: 'birthDate', type: 'datetime' },
+            { name: 'hireDate', type: 'datetime' },
+            { name: 'address', type: 'varchar' },
+            { name: 'city', type: 'varchar' },
+            { name: 'region', type: 'varchar' },
+            { name: 'postalCode', type: 'int' },
+            { name: 'country', type: 'varchar' },
+            { name: 'homePhone', type: 'varchar' },
+            { name: 'extension', type: 'int' },
+            { name: 'photo', type: 'varbinary' },
+            { name: 'notes', type: 'text' },
+            { name: 'reportsTo', type: 'int' },
+            { name: 'photoPath', type: 'varchar' },
+          ],
+        },
+        {
           name: 'Product',
           columns: [
             { name: 'productID', type: 'int' },
@@ -68,6 +91,7 @@ export default {
             { name: 'phone', type: 'varchar' },
           ],
         },
+        
       ],
       expanded: [],
     }
