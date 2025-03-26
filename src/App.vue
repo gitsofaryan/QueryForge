@@ -41,7 +41,7 @@
         </div>
         <!-- Always show the Output title, but toggle the content -->
         <div class="output-section">
-          <h3 class="output-title" @click="toggleOutput" >Output</h3>
+          <h3 class="output-title" @click="toggleOutput">Output</h3>
           <div v-if="isOutputVisible" class="output-content">
             <ShowOutput
               :output-data="outputData"
@@ -55,7 +55,7 @@
     <!-- Right Sidebar (History) -->
     <div v-if="isHistorySidebarVisible" class="right-sidebar">
       <div class="sidebar-header">
-    
+        <h3>History</h3>
         <span class="toggle-arrow" @click="toggleHistorySidebar">►</span>
       </div>
       <History :history="history" @select-query="handleSelectQuery" @clear-history="handleClearHistory" />
@@ -126,7 +126,7 @@ export default {
     async handleSubmit() {
       this.isOutputLoad = true
 
-      // Parse the query to extract columns and table
+      // Parse the query to extract columns, table, and optional WHERE clause
       const query = this.query.trim().toLowerCase()
       if (!query.endsWith(';')) {
         this.outputData = [{ error: 'Query must end with a semicolon.' }]
@@ -134,21 +134,21 @@ export default {
         return
       }
 
-      // Basic parsing for SELECT queries
-      const selectMatch = query.match(/^select\s+(.+?)\s+from\s+(.+?);$/)
+      // Updated regex to match queries with an optional WHERE clause
+      const selectMatch = query.match(/^select\s+(.+?)\s+from\s+(.+?)(?:\s+where\s+(.+?))?;/)
       if (!selectMatch) {
-        this.outputData = [{ error: 'Only basic SELECT queries are supported (e.g., SELECT column FROM table;).' }]
+        this.outputData = [{ error: 'Only basic SELECT queries are supported (e.g., SELECT column FROM table [WHERE column = \'value\'];).' }]
         this.isOutputLoad = false
         return
       }
 
-      const [, columnsPart, tableName] = selectMatch
+      const [, columnsPart, tableName, whereClause] = selectMatch
       const columns = columnsPart.split(',').map(col => col.trim())
       const isSelectAll = columns[0] === '*'
 
       // Load the appropriate data file based on the table name
       let rawData
-      if (tableName === 'customer') {
+      if (tableName === 'customer' || tableName === 'customers') { // Support both 'customer' and 'customers'
         const { default: data } = await import('./assets/data/customer.json')
         rawData = data
       } else if (tableName === 'product') {
@@ -163,11 +163,35 @@ export default {
         return
       }
 
+      // Apply WHERE clause filtering if present
+      let filteredData = rawData
+      if (whereClause) {
+        // Parse the WHERE clause (e.g., "country = 'Germany'")
+        const whereMatch = whereClause.match(/(\w+)\s*=\s*'(.*?)'/)
+        if (!whereMatch) {
+          this.outputData = [{ error: 'Only simple WHERE clauses are supported (e.g., column = \'value\').' }]
+          this.isOutputLoad = false
+          return
+        }
+
+        const [, column, value] = whereMatch
+        // Filter the data based on the WHERE condition
+        filteredData = rawData.filter(item => {
+          const dataKey = Object.keys(item).find(key => key.toLowerCase() === column)
+          if (!dataKey) {
+            this.outputData = [{ error: `Column "${column}" not found in table "${tableName}".` }]
+            this.isOutputLoad = false
+            return false
+          }
+          return item[dataKey].toLowerCase() === value.toLowerCase()
+        })
+      }
+
       // Filter the data based on the selected columns
       if (isSelectAll) {
-        this.outputData = rawData
+        this.outputData = filteredData
       } else {
-        this.outputData = rawData.map(item => {
+        this.outputData = filteredData.map(item => {
           const filteredItem = {}
           columns.forEach(col => {
             // Map the column name to the data key (case-insensitive)
@@ -299,7 +323,7 @@ export default {
 
 .editor-wrapper {
   flex: 1;
-  overflow-y: hidden;
+  overflow-y: auto;
   scrollbar-width: thin;
 }
 
@@ -311,7 +335,7 @@ export default {
 .output-title {
   margin: 0;
   padding: 0.5rem 1rem;
-  background-color: #0D1116; /* Darker background to match the screenshot */
+  background-color: #1a1e24; /* Darker background to match the screenshot */
   font-size: 1.2rem;
   font-weight: bold;
   color: #fff;
