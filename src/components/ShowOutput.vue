@@ -110,7 +110,7 @@ th {
 
 td {
   background-color: #1e2227;
-  color: #d1d5db; /* Lighter text color for cells */
+  color: #fff; /* Lighter text color for cells */
   font-weight: normal;
 }
 

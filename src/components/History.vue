@@ -42,15 +42,6 @@ export default {
 </script>
 
 <style scoped>
-.history-container {
-  background-color: #2c313a;
-  color: white;
-  padding: 1rem;
-  border-radius: 5px;
-  height: 100vh;
-  overflow-y: auto;
-}
-
 .history-header {
   display: flex;
   justify-content: space-between;
