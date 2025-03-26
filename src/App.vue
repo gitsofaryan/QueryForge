@@ -141,7 +141,10 @@ export default {
       if (tableName === 'customer') {
         const { default: data } = await import('./assets/data/customer.json')
         rawData = data
-      } else if (tableName === 'product') {
+      } else if (tableName === 'employees') {
+        const { default: data } = await import('./assets/data/employees.json')
+        rawData = data
+      }else if (tableName === 'product') {
         const { default: data } = await import('./assets/data/product.json')
         rawData = data
       } else if (tableName === 'supplier') {
