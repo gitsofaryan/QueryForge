@@ -81,7 +81,7 @@ export default {
         extensions: [
           sql(),
           okaidia,
-          customTheme, // Apply the custom theme after okaidia to override its styles
+          customTheme, 
           keymap.of(defaultKeymap),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {

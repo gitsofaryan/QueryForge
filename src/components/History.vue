@@ -1,6 +1,7 @@
 <template>
   <div class="history-container">
     <div class="history-header">
+      
       <h3>Recent</h3>
       <button v-if="history.length > 0" class="clear-btn" @click="clearHistory">
         Clear Queries

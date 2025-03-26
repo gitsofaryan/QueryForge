@@ -232,6 +232,7 @@ export default {
 .fullscreen .editor-container {
   flex: 1;
   border: none; /* Remove borders in fullscreen mode */
+  
 }
 
 .sidebar {
@@ -248,7 +249,7 @@ export default {
   align-items: center;
   justify-content: center;
   border-right: 1px solid #ffffff33;
-  background-color: #1a1e24;
+  background-color: #0D1116;
   cursor: pointer;
 }
 
@@ -265,7 +266,7 @@ export default {
   align-items: center;
   justify-content: center;
   border-left: 1px solid #ffffff33;
-  background-color: #1a1e24;
+  background-color: #0D1116;
   cursor: pointer;
 }
 
