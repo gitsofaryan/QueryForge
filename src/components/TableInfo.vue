@@ -1,6 +1,6 @@
 <template>
   <div class="table-info-container">
-          <h3>Available Tables</h3>
+      
     <div v-for="(table, index) in tables" :key="index" class="table-item">
         
       <div class="table-header" @click="toggleTable(index)">

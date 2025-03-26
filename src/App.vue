@@ -3,7 +3,7 @@
     <!-- Sidebar (Available Tables) on the left -->
     <div v-if="isTableSidebarVisible" class="sidebar">
       <div class="sidebar-header">
-    
+        <h3>Available Tables</h3>
         <span class="toggle-arrow" @click="toggleTableSidebar">◄</span>
       </div>
       <TableInfo @select-table="handleSelectTable" @select-column="handleSelectColumn" />
@@ -31,15 +31,17 @@
 
       <!-- Editor and Output -->
       <div class="editor-content">
-        <ShowEditor
-          :query="query"
-          :show-output-terminal="isOutputVisible"
-          :full-screen="fullScreen"
-          @update:query="query = $event"
-        />
+        <div class="editor-wrapper">
+          <ShowEditor
+            :query="query"
+            :show-output-terminal="isOutputVisible"
+            :full-screen="fullScreen"
+            @update:query="query = $event"
+          />
+        </div>
         <!-- Always show the Output title, but toggle the content -->
         <div class="output-section">
-          <h3 class="output-title" @click="toggleOutput">Output</h3>
+          <h3 class="output-title" @click="toggleOutput" >Output</h3>
           <div v-if="isOutputVisible" class="output-content">
             <ShowOutput
               :output-data="outputData"
@@ -53,7 +55,7 @@
     <!-- Right Sidebar (History) -->
     <div v-if="isHistorySidebarVisible" class="right-sidebar">
       <div class="sidebar-header">
-   
+    
         <span class="toggle-arrow" @click="toggleHistorySidebar">►</span>
       </div>
       <History :history="history" @select-query="handleSelectQuery" @clear-history="handleClearHistory" />
@@ -88,13 +90,39 @@ export default {
       activeTab: 0,
       isOutputVisible: false,
       fullScreen: false,
-      isTableSidebarVisible: true, // New: Control visibility of Available Tables sidebar
-      isHistorySidebarVisible: true, // New: Control visibility of History sidebar
+      isTableSidebarVisible: true,
+      isHistorySidebarVisible: true,
       outputData: null,
       isOutputLoad: false,
     }
   },
+  created() {
+    // Load history from localStorage on app start
+    const savedHistory = localStorage.getItem('history')
+    if (savedHistory) {
+      try {
+        const parsedHistory = JSON.parse(savedHistory)
+        this.history = parsedHistory.items || []
+      } catch (error) {
+        console.error('Error parsing history from localStorage:', error)
+        this.history = []
+      }
+    }
+  },
+  mounted() {
+    // Add event listener to prevent page reload
+    window.addEventListener('beforeunload', this.handleBeforeUnload)
+  },
+  beforeUnmount() {
+    // Clean up event listener
+    window.removeEventListener('beforeunload', this.handleBeforeUnload)
+  },
   methods: {
+    handleBeforeUnload(event) {
+      // Show a confirmation dialog when the user tries to reload the page
+      event.preventDefault()
+      event.returnValue = 'Are you sure you want to leave? Your query history will be saved, but other changes may be lost.'
+    },
     async handleSubmit() {
       this.isOutputLoad = true
 
@@ -254,7 +282,7 @@ export default {
   border-right: 1px solid #ffffff33;
   display: flex;
   flex-direction: column;
-  overflow-x: auto;
+  overflow: auto;
   transition: flex 0.3s ease;
 }
 
@@ -269,14 +297,21 @@ export default {
   overflow: hidden;
 }
 
+.editor-wrapper {
+  flex: 1;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
 .output-section {
   border-top: 1px solid #ffffff33;
+  overflow: hidden; /* Prevent the entire output section from scrolling */
 }
 
 .output-title {
   margin: 0;
   padding: 0.5rem 1rem;
-  background-color: #0d1116;
+  background-color: #0D1116; /* Darker background to match the screenshot */
   font-size: 1.2rem;
   font-weight: bold;
   color: #fff;
@@ -284,11 +319,11 @@ export default {
 }
 
 .output-title:hover {
-  background-color: #2c313a;
+  background-color: #2c313a; /* Hover effect to match the screenshot */
 }
 
 .output-content {
-  height: 240px;
-  overflow-y: auto;
+  height: 250px; /* Fixed height for the output section */
+  overflow: hidden; /* Prevent the container from scrolling */
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
   <div class="history-container">
     <div class="history-header">
-      <h3>History</h3>
+      <h3>Recent</h3>
       <button v-if="history.length > 0" class="clear-btn" @click="clearHistory">
-        Clear History
+        Clear Queries
       </button>
     </div>
     <div v-if="history.length === 0" class="no-history">

@@ -49,19 +49,21 @@ export default {
   height: 100%; /* Fit within the parent container */
   background-color: #1e2227;
   color: white;
+  overflow: hidden; /* Prevent the wrapper from scrolling */
 }
 
 .loading {
   padding: 1rem;
   text-align: center;
+  color: #d1d5db;
 }
 
 .table-container {
-  width: auto;
+  width: 100%;
   height: 100%;
-  overflow: auto; /* Enable scrolling */
+  overflow: auto; /* Enable scrolling for the table */
   scrollbar-width: thin;
-  padding: 4px;
+  padding: 0; /* Remove padding to match the screenshot */
 }
 
 /* For Webkit browsers (Chrome, Edge, Safari) */
@@ -84,22 +86,21 @@ export default {
 }
 
 table {
-  width: max-content; /* Allow table to expand based on content */
-  min-width: 100%; /* Ensure it takes at least the full width */
+  width: 100%; /* Take up the full width of the container */
   border-collapse: collapse;
-  font-size: small;
+  font-size: 0.875rem; /* Smaller font size to match the screenshot */
 }
 
 th,
 td {
-  padding: 0.5rem;
-  border: 1px solid #ffffff33;
+  padding: 0.5rem; /* Consistent padding as in the screenshot */
+  border-bottom: 1px solid #ffffff33; /* Border only on the bottom */
   text-align: left;
   white-space: nowrap; /* Prevent text wrapping */
 }
 
 th {
-  background-color: #2c313a;
+  background-color: #2c313a; /* Darker background for headers */
   color: #fff;
   font-weight: bold;
   position: sticky;
@@ -109,12 +110,13 @@ th {
 
 td {
   background-color: #1e2227;
-  color: #fff;
+  color: #d1d5db; /* Lighter text color for cells */
   font-weight: normal;
 }
 
 .no-data {
   padding: 1rem;
   text-align: center;
+  color: #d1d5db;
 }
 </style>
