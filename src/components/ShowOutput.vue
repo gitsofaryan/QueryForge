@@ -116,6 +116,5 @@ td {
 .no-data {
   padding: 1rem;
   text-align: center;
-  margin-top: 2rem; /* Space for the title */
 }
 </style>

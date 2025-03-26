@@ -8,7 +8,7 @@
         :class="['tab', { active: activeTab === index }]"
         @click="handleActiveTab(index)"
       >
-        <span class="tab-label">Console {{ index }}</span>
+        <span class="tab-label">Input {{ index }}</span>
         <span
           v-if="index !== 0"
           class="close-tab"

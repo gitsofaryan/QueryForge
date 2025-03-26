@@ -2,6 +2,7 @@
   <div class="app-container">
     <!-- Sidebar (Available Tables) on the left -->
     <div class="sidebar">
+
       <TableInfo @select-table="handleSelectTable" @select-column="handleSelectColumn" />
     </div>
 
@@ -30,12 +31,15 @@
           :full-screen="fullScreen"
           @update:query="query = $event"
         />
-        <div class="output" v-if="isOutputVisible">
+        <!-- Always show the Output title, but toggle the content -->
+        <div class="output-section">
           <h3 class="output-title" @click="toggleOutput">Output</h3>
-          <ShowOutput
-            :output-data="outputData"
-            :is-output-load="isOutputLoad"
-          />
+          <div v-if="isOutputVisible" class="output-content">
+            <ShowOutput
+              :output-data="outputData"
+              :is-output-load="isOutputLoad"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -82,7 +86,6 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      this.isOutputVisible = true
       this.isOutputLoad = true
 
       // Parse the query to extract columns and table
@@ -181,7 +184,7 @@ export default {
 .sidebar {
   flex: 0.2;
   border-right: 1px solid #ffffff33;
-  padding: 10px;
+  padding: 1rem;
   overflow-y: auto;
 }
 
@@ -208,17 +211,17 @@ export default {
 
 .table-info {
   flex: 1;
+  padding: 1rem;
   overflow-y: auto;
-  padding: 10px;
 }
 
-.output {
-  height: 240px;
+.output-section {
   border-top: 1px solid #ffffff33;
 }
 
 .output-title {
   margin: 0;
+  margin-bottom: 3px;
   padding: 0.5rem 1rem;
   background-color: #0d1116;
   font-size: 1.2rem;
@@ -229,5 +232,10 @@ export default {
 
 .output-title:hover {
   background-color: #2c313a;
+}
+
+.output-content {
+  height: 240px;
+  overflow-y: hidden;
 }
 </style>
