@@ -22,10 +22,24 @@
 
     <!-- Action Buttons -->
     <div class="action-buttons">
-      <!-- File Import -->
+      <!-- Fullscreen Toggle Button -->
+      <button class="action-btn sidebar-toggle-btn" @click="handleToggleFullScreen">
+        <svg v-if="!fullScreen" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#e3e3e3">
+          <path d="M0 0h24v24H0V0z" fill="none"/>
+          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#e3e3e3">
+          <path d="M0 0h24v24H0V0z" fill="none"/>
+          <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+        </svg>
+      </button>
+
+      <!-- Import Button -->
       <label for="file-input" class="action-btn import-btn">
-        Import
-        <UploadFileIcon class="icon" />
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#e3e3e3">
+          <g><rect fill="none" height="24" width="24"/></g>
+          <g><path d="M18,15v3H6v-3H4v3c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2v-3H18z M7,9l1.41,1.41L11,7.83V16h2V7.83l2.59,2.58L17,9l-5-5L7,9z"/></g>
+        </svg>
       </label>
       <input
         id="file-input"
@@ -34,10 +48,12 @@
         @change="handleFileImport"
       />
 
-      <!-- File Export -->
+      <!-- Export Button -->
       <button class="action-btn export-btn" @click="handleExport">
-        Export
-        <DownloadIcon class="icon" />
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#e3e3e3">
+          <g><rect fill="none" height="24" width="24"/></g>
+          <g><path d="M18,15v3H6v-3H4v3c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2v-3H18z M17,11l-1.41-1.41L13,12.17V4h-2v8.17L8.41,9.59L7,11l5,5L17,11z"/></g>
+        </svg>
       </button>
 
       <!-- Run SQL Button -->
@@ -46,22 +62,18 @@
         :disabled="!query"
         @click="handleSubmit"
       >
-        Run SQL
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#e3e3e3">
+          <path d="M0 0h24v24H0V0z" fill="none"/>
+          <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+        </svg>
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import UploadFileIcon from '@mui/icons-material/UploadFile'
-import DownloadIcon from '@mui/icons-material/Download'
-
 export default {
   name: 'EditorNavbar',
-  components: {
-    UploadFileIcon,
-    DownloadIcon,
-  },
   props: {
     tabs: {
       type: Array,
@@ -86,10 +98,11 @@ export default {
     'update:query',
     'update:fullScreen',
     'submit',
+    'toggle-sidebars',
   ],
   data() {
     return {
-      darkMode: true, // Default to dark mode (can be toggled)
+      darkMode: true,
     }
   },
   methods: {
@@ -139,9 +152,12 @@ export default {
     handleSubmit() {
       this.$emit('submit')
     },
-    toggleDarkMode() {
-      this.darkMode = !this.darkMode
-      // Emit an event or handle dark mode toggle logic if needed
+    handleToggleSidebars() {
+      this.$emit('toggle-sidebars')
+    },
+    handleToggleFullScreen() {
+      console.log('Toggling fullscreen, current state:', this.fullScreen) // Debug log
+      this.$emit('update:fullScreen', !this.fullScreen)
     },
   },
 }
@@ -154,6 +170,25 @@ export default {
   align-items: center;
   height: 50px;
   background-color: #0d1116;
+}
+
+.sidebar-toggle-btn {
+  margin-left: 0.5rem;
+  background-color: #4b5563;
+  color: #d1d5db;
+  border: none;
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: #6b7280;
 }
 
 .tabs-container {
@@ -298,7 +333,6 @@ export default {
   display: none;
 }
 
-/* Add styling for icons to ensure visibility */
 .icon {
   margin-left: 0.25rem;
   font-size: 1rem;

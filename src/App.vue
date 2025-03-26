@@ -1,14 +1,14 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" :class="{ fullscreen: fullScreen }">
     <!-- Sidebar (Available Tables) on the left -->
-    <div v-if="isTableSidebarVisible" class="sidebar">
+    <div v-if="isTableSidebarVisible && !fullScreen" class="sidebar">
       <div class="sidebar-header">
         <h3>Available Tables</h3>
         <span class="toggle-arrow" @click="toggleTableSidebar">◄</span>
       </div>
       <TableInfo @select-table="handleSelectTable" @select-column="handleSelectColumn" />
     </div>
-    <div v-else class="sidebar-toggle">
+    <div v-else-if="!fullScreen" class="sidebar-toggle">
       <span class="toggle-arrow" @click="toggleTableSidebar">►</span>
     </div>
 
@@ -27,6 +27,7 @@
         @update:full-screen="fullScreen = $event"
         @update:is-output-visible="isOutputVisible = $event"
         @submit="handleSubmit"
+        @toggle-sidebars="toggleBothSidebars"
       />
 
       <!-- Editor and Output -->
@@ -39,9 +40,8 @@
             @update:query="query = $event"
           />
         </div>
-        <!-- Always show the Output title, but toggle the content -->
         <div class="output-section">
-          <h3 class="output-title" @click="toggleOutput" >Output</h3>
+          <h3 class="output-title" @click="toggleOutput">Output</h3>
           <div v-if="isOutputVisible" class="output-content">
             <ShowOutput
               :output-data="outputData"
@@ -53,14 +53,13 @@
     </div>
 
     <!-- Right Sidebar (History) -->
-    <div v-if="isHistorySidebarVisible" class="right-sidebar">
+    <div v-if="isHistorySidebarVisible && !fullScreen" class="right-sidebar">
       <div class="sidebar-header">
-    
         <span class="toggle-arrow" @click="toggleHistorySidebar">►</span>
       </div>
       <History :history="history" @select-query="handleSelectQuery" @clear-history="handleClearHistory" />
     </div>
-    <div v-else class="right-sidebar-toggle">
+    <div v-else-if="!fullScreen" class="right-sidebar-toggle">
       <span class="toggle-arrow" @click="toggleHistorySidebar">◄</span>
     </div>
   </div>
@@ -97,7 +96,6 @@ export default {
     }
   },
   created() {
-    // Load history from localStorage on app start
     const savedHistory = localStorage.getItem('history')
     if (savedHistory) {
       try {
@@ -110,43 +108,35 @@ export default {
     }
   },
   mounted() {
-    // Add event listener to prevent page reload
     window.addEventListener('beforeunload', this.handleBeforeUnload)
   },
   beforeUnmount() {
-    // Clean up event listener
     window.removeEventListener('beforeunload', this.handleBeforeUnload)
   },
   methods: {
     handleBeforeUnload(event) {
-      // Show a confirmation dialog when the user tries to reload the page
       event.preventDefault()
       event.returnValue = 'Are you sure you want to leave? Your query history will be saved, but other changes may be lost.'
     },
     async handleSubmit() {
       this.isOutputLoad = true
-
-      // Parse the query to extract columns and table
       const query = this.query.trim().toLowerCase()
       if (!query.endsWith(';')) {
         this.outputData = [{ error: 'Query must end with a semicolon.' }]
         this.isOutputLoad = false
+        this.isOutputVisible = true // Open output window even on error
         return
       }
-
-      // Basic parsing for SELECT queries
       const selectMatch = query.match(/^select\s+(.+?)\s+from\s+(.+?);$/)
       if (!selectMatch) {
         this.outputData = [{ error: 'Only basic SELECT queries are supported (e.g., SELECT column FROM table;).' }]
         this.isOutputLoad = false
+        this.isOutputVisible = true // Open output window even on error
         return
       }
-
       const [, columnsPart, tableName] = selectMatch
       const columns = columnsPart.split(',').map(col => col.trim())
       const isSelectAll = columns[0] === '*'
-
-      // Load the appropriate data file based on the table name
       let rawData
       if (tableName === 'customer') {
         const { default: data } = await import('./assets/data/customer.json')
@@ -160,17 +150,15 @@ export default {
       } else {
         this.outputData = [{ error: `Table "${tableName}" not found.` }]
         this.isOutputLoad = false
+        this.isOutputVisible = true // Open output window even on error
         return
       }
-
-      // Filter the data based on the selected columns
       if (isSelectAll) {
         this.outputData = rawData
       } else {
         this.outputData = rawData.map(item => {
           const filteredItem = {}
           columns.forEach(col => {
-            // Map the column name to the data key (case-insensitive)
             const dataKey = Object.keys(item).find(key => key.toLowerCase() === col)
             if (dataKey) {
               filteredItem[dataKey] = item[dataKey]
@@ -179,10 +167,10 @@ export default {
           return filteredItem
         })
       }
-
       this.isOutputLoad = false
       this.history = [...this.history, this.query]
       localStorage.setItem('history', JSON.stringify({ items: this.history }))
+      this.isOutputVisible = true // Open output window on successful query
     },
     toggleOutput() {
       this.isOutputVisible = !this.isOutputVisible
@@ -211,6 +199,10 @@ export default {
     toggleHistorySidebar() {
       this.isHistorySidebarVisible = !this.isHistorySidebarVisible
     },
+    toggleBothSidebars() {
+      this.isTableSidebarVisible = !this.isTableSidebarVisible
+      this.isHistorySidebarVisible = !this.isHistorySidebarVisible
+    },
   },
 }
 </script>
@@ -223,6 +215,20 @@ export default {
   overflow: hidden;
   background-color: #0d1116;
   color: white;
+}
+
+.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+}
+
+.fullscreen .editor-container {
+  flex: 1;
+  border: none; /* Remove borders in fullscreen mode */
 }
 
 .sidebar {
@@ -267,6 +273,12 @@ export default {
   margin-bottom: 1rem;
 }
 
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: hsl(0, 0%, 99%);
+}
+
 .toggle-arrow {
   font-size: 1.2rem;
   color: #d1d5db;
@@ -306,13 +318,13 @@ export default {
 
 .output-section {
   border-top: 1px solid #ffffff33;
-  overflow: hidden; /* Prevent the entire output section from scrolling */
+  overflow: hidden;
 }
 
 .output-title {
   margin: 0;
   padding: 0.5rem 1rem;
-  background-color: #0D1116; /* Darker background to match the screenshot */
+  background-color: #0D1116;
   font-size: 1.2rem;
   font-weight: bold;
   color: #fff;
@@ -320,11 +332,11 @@ export default {
 }
 
 .output-title:hover {
-  background-color: #2c313a; /* Hover effect to match the screenshot */
+  background-color: #2c313a;
 }
 
 .output-content {
-  height: 250px; /* Fixed height for the output section */
-  overflow: hidden; /* Prevent the container from scrolling */
+  height: 250px;
+  overflow: hidden;
 }
 </style>
