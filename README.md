@@ -32,7 +32,7 @@ Measured using Lighthouse on the deployed app:
 ## Deployment and Links
 - **Deployed App**: [Insert link]
 - **Docs**:
-  - Architecture Diagram: [Insert link]
+  - Sequence Diagram: [Insert link]
   - ER Diagram: [Insert link]
   - Explanation PDF: [Insert link]
   - Video Walkthrough: [Insert link]
