@@ -72,6 +72,8 @@
 </template>
 
 <script>
+import DownloadIcon from '@mui/icons-material/Download';
+
 export default {
   name: 'EditorNavbar',
   props: {
@@ -202,18 +204,18 @@ export default {
 .tab {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 0.75rem;
+  justify-content: space-evenly;
   height: 100%;
+  padding: 5px;
   min-width: 120px;
-  background-color: #1a1e24;
+  background-color: #0D1116;
   border-right: 1px solid #ffffff33;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .tab.active {
-  background-color: #282c34;
+  background-color: #1C2130;
 }
 
 .tab-label {

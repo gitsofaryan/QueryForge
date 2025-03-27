@@ -2,10 +2,7 @@
   <div class="output-wrapper">
     <!-- Output Content -->
     <div v-if="isOutputLoad" class="loading">Loading...</div>
-    <div
-      v-else-if="outputData && outputData.length > 0"
-      class="table-container"
-    >
+    <div v-else-if="outputData && outputData.length > 0" class="table-container">
       <table>
         <thead>
           <tr>

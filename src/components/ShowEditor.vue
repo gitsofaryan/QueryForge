@@ -56,23 +56,23 @@ export default {
   },
   methods: {
     initEditor() {
-      // Custom theme to override the background color and other elements
+
       const customTheme = EditorView.theme({
         '&': {
-          backgroundColor: '#282c34', // Match the editor-wrapper background
+          backgroundColor: '#1C2130', 
         },
         '.cm-content': {
-          backgroundColor: '#282c34',
+          backgroundColor: '#1C2130',
         },
         '.cm-gutters': {
-          backgroundColor: '#282c34', // Match the gutter background
-          borderRight: '1px solid #ffffff33', // Optional: Add a subtle border to match the app's style
+          backgroundColor: '#1C2130', 
+          borderRight: '1px solid #ffffff33',
         },
         '.cm-activeLine': {
-          backgroundColor: '#2c313a', // Slightly lighter shade for active line
+          backgroundColor: '#1C2130', 
         },
         '.cm-activeLineGutter': {
-          backgroundColor: '#2c313a', // Match the gutter active line
+          backgroundColor: '#1C2130', 
         },
       })
 
@@ -117,6 +117,6 @@ export default {
 <style scoped>
 .editor-wrapper {
   width: 100%;
-  background-color: #282c34;
+  background-color: #1C2130;
 }
 </style>

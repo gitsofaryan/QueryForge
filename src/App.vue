@@ -43,6 +43,10 @@
         <div class="output-section">
           <h3 class="output-title" @click="toggleOutput">Output</h3>
           <div v-if="isOutputVisible" class="output-content">
+            <!-- Performance Metrics -->
+            <div v-if="outputData && outputData.length > 0" class="metrics">
+              Query executed in {{ executionTime }} seconds, returned {{ outputData.length }} rows
+            </div>
             <ShowOutput
               :output-data="outputData"
               :is-output-load="isOutputLoad"
@@ -93,121 +97,122 @@ export default {
       isHistorySidebarVisible: true,
       outputData: null,
       isOutputLoad: false,
-    }
+      executionTime: 0.1, // Static execution time for now
+    };
   },
   created() {
-    const savedHistory = localStorage.getItem('history')
+    const savedHistory = localStorage.getItem('history');
     if (savedHistory) {
       try {
-        const parsedHistory = JSON.parse(savedHistory)
-        this.history = parsedHistory.items || []
+        const parsedHistory = JSON.parse(savedHistory);
+        this.history = parsedHistory.items || [];
       } catch (error) {
-        console.error('Error parsing history from localStorage:', error)
-        this.history = []
+        console.error('Error parsing history from localStorage:', error);
+        this.history = [];
       }
     }
   },
   mounted() {
-    window.addEventListener('beforeunload', this.handleBeforeUnload)
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
   beforeUnmount() {
-    window.removeEventListener('beforeunload', this.handleBeforeUnload)
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
   },
   methods: {
     handleBeforeUnload(event) {
-      event.preventDefault()
-      event.returnValue = 'Are you sure you want to leave? Your query history will be saved, but other changes may be lost.'
+      event.preventDefault();
+      event.returnValue = 'Are you sure you want to leave? Your query history will be saved, but other changes may be lost.';
     },
     async handleSubmit() {
-      this.isOutputLoad = true
-      const query = this.query.trim().toLowerCase()
+      this.isOutputLoad = true;
+      const query = this.query.trim().toLowerCase();
       if (!query.endsWith(';')) {
-        this.outputData = [{ error: 'Query must end with a semicolon.' }]
-        this.isOutputLoad = false
-        this.isOutputVisible = true // Open output window even on error
-        return
+        this.outputData = [{ error: 'Query must end with a semicolon.' }];
+        this.isOutputLoad = false;
+        this.isOutputVisible = true;
+        return;
       }
-      const selectMatch = query.match(/^select\s+(.+?)\s+from\s+(.+?);$/)
+      const selectMatch = query.match(/^select\s+(.+?)\s+from\s+(.+?);$/);
       if (!selectMatch) {
-        this.outputData = [{ error: 'Only basic SELECT queries are supported (e.g., SELECT column FROM table;).' }]
-        this.isOutputLoad = false
-        this.isOutputVisible = true // Open output window even on error
-        return
+        this.outputData = [{ error: 'Only basic SELECT queries are supported (e.g., SELECT column FROM table;).' }];
+        this.isOutputLoad = false;
+        this.isOutputVisible = true;
+        return;
       }
-      const [, columnsPart, tableName] = selectMatch
-      const columns = columnsPart.split(',').map(col => col.trim())
-      const isSelectAll = columns[0] === '*'
-      let rawData
+      const [, columnsPart, tableName] = selectMatch;
+      const columns = columnsPart.split(',').map(col => col.trim());
+      const isSelectAll = columns[0] === '*';
+      let rawData;
       if (tableName === 'customer') {
-        const { default: data } = await import('./assets/data/customer.json')
-        rawData = data
+        const { default: data } = await import('./assets/data/customer.json');
+        rawData = data;
       } else if (tableName === 'employees') {
-        const { default: data } = await import('./assets/data/employees.json')
-        rawData = data
-      }else if (tableName === 'product') {
-        const { default: data } = await import('./assets/data/product.json')
-        rawData = data
+        const { default: data } = await import('./assets/data/employees.json');
+        rawData = data;
+      } else if (tableName === 'product') {
+        const { default: data } = await import('./assets/data/product.json');
+        rawData = data;
       } else if (tableName === 'supplier') {
-        const { default: data } = await import('./assets/data/supplier.json')
-        rawData = data
+        const { default: data } = await import('./assets/data/supplier.json');
+        rawData = data;
       } else {
-        this.outputData = [{ error: `Table "${tableName}" not found.` }]
-        this.isOutputLoad = false
-        this.isOutputVisible = true // Open output window even on error
-        return
+        this.outputData = [{ error: `Table "${tableName}" not found.` }];
+        this.isOutputLoad = false;
+        this.isOutputVisible = true;
+        return;
       }
       if (isSelectAll) {
-        this.outputData = rawData
+        this.outputData = rawData;
       } else {
         this.outputData = rawData.map(item => {
-          const filteredItem = {}
+          const filteredItem = {};
           columns.forEach(col => {
-            const dataKey = Object.keys(item).find(key => key.toLowerCase() === col)
+            const dataKey = Object.keys(item).find(key => key.toLowerCase() === col);
             if (dataKey) {
-              filteredItem[dataKey] = item[dataKey]
+              filteredItem[dataKey] = item[dataKey];
             }
-          })
-          return filteredItem
-        })
+          });
+          return filteredItem;
+        });
       }
-      this.isOutputLoad = false
-      this.history = [...this.history, this.query]
-      localStorage.setItem('history', JSON.stringify({ items: this.history }))
-      this.isOutputVisible = true // Open output window on successful query
+      this.isOutputLoad = false;
+      this.history = [...this.history, this.query];
+      localStorage.setItem('history', JSON.stringify({ items: this.history }));
+      this.isOutputVisible = true;
     },
     toggleOutput() {
-      this.isOutputVisible = !this.isOutputVisible
+      this.isOutputVisible = !this.isOutputVisible;
     },
     handleSelectQuery(query) {
-      this.query = query
-      this.tabs[this.activeTab] = query
+      this.query = query;
+      this.tabs[this.activeTab] = query;
     },
     handleSelectTable(tableName) {
-      const newQuery = `SELECT * FROM ${tableName};`
-      this.query = newQuery
-      this.tabs[this.activeTab] = newQuery
+      const newQuery = `SELECT * FROM ${tableName};`;
+      this.query = newQuery;
+      this.tabs[this.activeTab] = newQuery;
     },
     handleSelectColumn({ tableName, columnName }) {
-      const newQuery = `SELECT ${columnName} FROM ${tableName};`
-      this.query = newQuery
-      this.tabs[this.activeTab] = newQuery
+      const newQuery = `SELECT ${columnName} FROM ${tableName};`;
+      this.query = newQuery;
+      this.tabs[this.activeTab] = newQuery;
     },
     handleClearHistory() {
-      this.history = []
-      localStorage.setItem('history', JSON.stringify({ items: this.history }))
+      this.history = [];
+      localStorage.setItem('history', JSON.stringify({ items: this.history }));
     },
     toggleTableSidebar() {
-      this.isTableSidebarVisible = !this.isTableSidebarVisible
+      this.isTableSidebarVisible = !this.isTableSidebarVisible;
     },
     toggleHistorySidebar() {
-      this.isHistorySidebarVisible = !this.isHistorySidebarVisible
+      this.isHistorySidebarVisible = !this.isHistorySidebarVisible;
     },
     toggleBothSidebars() {
-      this.isTableSidebarVisible = !this.isTableSidebarVisible
-      this.isHistorySidebarVisible = !this.isHistorySidebarVisible
+      this.isTableSidebarVisible = !this.isTableSidebarVisible;
+      this.isHistorySidebarVisible = !this.isHistorySidebarVisible;
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -232,7 +237,6 @@ export default {
 .fullscreen .editor-container {
   flex: 1;
   border: none; /* Remove borders in fullscreen mode */
-  
 }
 
 .sidebar {
@@ -342,5 +346,11 @@ export default {
 .output-content {
   height: 250px;
   overflow: hidden;
+}
+
+.metrics {
+  padding: 0.5rem 1rem;
+  color: #60a5fa;
+  font-size: 0.875rem;
 }
 </style>
