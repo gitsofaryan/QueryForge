@@ -205,7 +205,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  height: 100%;
+  height: 80%;
   padding: 5px;
   min-width: 120px;
   background-color: #0D1116;

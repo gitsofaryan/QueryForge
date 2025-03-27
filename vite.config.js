@@ -1,15 +1,29 @@
-// vite.config.js
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import chunkSplitPlugin from 'vite-plugin-chunk-split';
 
 export default defineConfig({
-  plugins: [vue()],
-  optimizeDeps: {
-    include: ['@mui/icons-material', '@mui/material'],
-  },
-  resolve: {
-    alias: {
-      '@': '/src',
+  plugins: [
+    vue(),
+    chunkSplitPlugin({
+      strategy: 'default',
+      customSplitting: {
+        'vendor': [/node_modules/],
+        'codemirror': [/codemirror/],
+        'mui': [/mui/],
+        'lodash': [/lodash/],
+      },
+    }),
+  ],
+  build: {
+    minify: 'esbuild',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+      },
     },
   },
-})
+  server: {
+    compress: true,
+  },
+});
