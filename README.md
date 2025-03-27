@@ -29,14 +29,6 @@ Measured using Lighthouse on the deployed app:
 - Supports rendering 10,000+ rows using `vue3-virtual-scroll-list` (partially implemented).
 - Data caching in memory to avoid re-processing.
 
-## Deployment and Links
-- **Deployed App**: [Insert link]
-- **Docs**:
-  - Sequence Diagram: [Insert link]
-  - ER Diagram: [Insert link]
-  - Explanation PDF: [Insert link]
-  - Video Walkthrough: [Insert link]
-
 ## Notes
 - **Accessibility**: Scored 78/100; future improvements include ARIA labels and keyboard navigation.
 - **SEO**: Scored 50/100; will add meta tags and semantic HTML.
