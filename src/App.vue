@@ -161,7 +161,7 @@ export default {
         this.isOutputLoad = false;
         this.isOutputVisible = true;
         const end = performance.now();
-        this.executionTime = ((end - start) / 100).toFixed(3);
+        this.executionTime = ((end - start) / 1000).toFixed(3);
         return;
       }
 
@@ -176,7 +176,7 @@ export default {
         this.isOutputLoad = false;
         this.isOutputVisible = true;
         const end = performance.now();
-        this.executionTime = ((end - start) / 100).toFixed(3);
+        this.executionTime = ((end - start) / 1000).toFixed(3);
         return;
       }
 
@@ -208,7 +208,7 @@ export default {
           this.isOutputLoad = false;
           this.isOutputVisible = true;
           const end = performance.now();
-          this.executionTime = ((end - start) / 100).toFixed(3);
+          this.executionTime = ((end - start) / 1000).toFixed(3);
           return;
         }
         this.dataCache[tableName] = rawData;
@@ -242,7 +242,7 @@ export default {
       this.isOutputVisible = true;
 
       const end = performance.now();
-      this.executionTime = ((end - start) / 100).toFixed(3); // Update execution time
+      this.executionTime = ((end - start) / 1000).toFixed(3); // Update execution time
     },
     saveHistory: throttle(function () {
       localStorage.setItem("history", JSON.stringify({ items: this.history }));
