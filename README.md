@@ -1,6 +1,5 @@
-# QueryForge - SQL Code Editor
+## QueryForge - SQL Code Editor
 
-## Overview
 QueryForge is a web-based SQL editor for running and displaying query results. Built with Vue 3, it features a CodeMirror-powered editor, table explorer, query history, and output display. It uses mock JSON data (`customer.json`, `employees.json`, etc.) and supports basic `SELECT` queries, designed for data analysts to manage SQL tasks efficiently.
 
 ## JavaScript Framework and Major Packages
@@ -13,6 +12,8 @@ QueryForge is a web-based SQL editor for running and displaying query results. B
   - Vue3-Virtual-Scroll-List - For potential virtual scrolling of large datasets.
 
 ## Page Load Time and Measurement
+![image](https://github.com/user-attachments/assets/7cc1ca90-17dd-43da-b178-abc6c736056f)
+
 Measured using Lighthouse on the deployed app:
 - **Performance Score**: 99/100
 - **Initial Load Time**: ~1.5s on a 4G connection (via Lighthouse’s network throttling).
