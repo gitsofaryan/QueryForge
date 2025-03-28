@@ -1,4 +1,6 @@
-## QueryForge - SQL Code Editor
+## <center> QueryForge - SQL Code Editor </center> 
+
+![Recording 2025-03-28 093702 (1)](https://github.com/user-attachments/assets/c84c24eb-6721-47d6-8672-e11e46acb686)
 
 QueryForge is a web-based SQL editor for running and displaying query results. Built with Vue 3, it features a CodeMirror-powered editor, table explorer, query history, and output display. It uses mock JSON data (`customer.json`, `employees.json`, etc.) and supports basic `SELECT` queries, designed for data analysts to manage SQL tasks efficiently.
 
